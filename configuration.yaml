@@ -1,7 +1,12 @@
 homeassistant:
   auth_providers:
-    - type: homeassistant
-  #    - type: legacy_api_password
+   - type: homeassistant
+   # Uncomment next line if you want to enable legacy API password support
+   # - type: legacy_api_password
+
+# Enable the auth component
+auth:
+
   # Name of the location where Home Assistant is running
   name: Ring Home
   # Location required to calculate the time the sun rises and sets
@@ -33,7 +38,7 @@ config:
 
 http:
   # Secrets are defined in the file secrets.yaml
-  api_password: !secret http_password
+  #api_password: !secret http_password
   # Uncomment this if you are using SSL/TLS, running in Docker container, etc.
   # base_url: example.duckdns.org:8123
   ssl_certificate: ~/.homeassistant/dehydrated/certs/ringhome.duckdns.org/fullchain.pem
