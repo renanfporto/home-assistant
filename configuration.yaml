@@ -1,0 +1,171 @@
+homeassistant:
+  #  auth_providers:
+  #    - type: homeassistant
+  #    - type: legacy_api_password
+  # Name of the location where Home Assistant is running
+  name: Ring Home
+  # Location required to calculate the time the sun rises and sets
+  latitude: !secret latitude
+  longitude: !secret longitude
+  # Impacts weather/sunrise data (altitude above sea level in meters)
+  elevation: !secret elevation
+  # metric for Metric, imperial for Imperial
+  unit_system: metric
+  # Pick yours from here: http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+  time_zone: America/Recife
+  # Customization file
+  customize: !include customize.yaml
+
+# Show links to resources in log and frontend
+#introduction:
+
+# Enables the frontend
+frontend:
+#  themes: !include themes.yaml
+  themes:
+    happy:
+      primary-color: blue
+    sad:
+      primary-color: red
+
+# Enables configuration UI
+config:
+
+http:
+  # Secrets are defined in the file secrets.yaml
+  api_password: !secret http_password
+  # Uncomment this if you are using SSL/TLS, running in Docker container, etc.
+  # base_url: example.duckdns.org:8123
+  ssl_certificate: ~/.homeassistant/dehydrated/certs/ringhome.duckdns.org/fullchain.pem
+  ssl_key: ~/.homeassistant/dehydrated/certs/ringhome.duckdns.org/privkey.pem
+  base_url: !secret url
+
+duckdns:
+  domain: ringhome
+  access_token: !secret token
+
+# Checks for available updates
+# Note: This component will send some information about your system to
+# the developers to assist with development of Home Assistant.
+# For more information, please see:
+# https://home-assistant.io/blog/2016/10/25/explaining-the-updater/
+updater:
+  # Optional, allows Home Assistant developers to focus on popular components.
+  # include_used_components: true
+
+# Discover some devices automatically
+discovery:
+
+# Allows you to issue voice commands from the frontend in enabled browsers
+conversation:
+
+# Enables support for tracking state changes over time
+history:
+
+# View all events in a logbook
+logbook:
+
+# Enables a map showing the location of tracked devices
+map:
+
+# Track the sun
+sun:
+
+# Weather prediction
+sensor:
+  - platform: yr
+
+# Text to speech
+tts:
+  - platform: google
+
+#MQTT broker
+mqtt:
+  broker: 10.0.0.201
+  port: 1883
+  client_id: home-assistant-1
+  username: !secret mqtt_user
+  password: !secret mqtt_password
+
+# Cloud
+cloud:
+  google_actions:
+    filter:
+      include_entities:
+        - light.bedroom_relay
+
+#group: !include groups.yaml
+automation: !include automations.yaml
+script: !include scripts.yaml
+
+switch 1:
+  - platform: mqtt
+    name: "Luz 1"
+    icon: mdi:lightbulb
+    state_topic: "ring/office/switch0/status"
+    command_topic: "ring/office/switch0/set"
+    payload_on: '1'
+    payload_off: '0'
+    retain: true
+
+switch 2:
+  - platform: mqtt
+    name: "Luz 2"
+    icon: mdi:lightbulb
+    state_topic: "ring/office/switch1/status"
+    command_topic: "ring/office/switch1/set"
+    payload_on: '1'
+    payload_off: '0'
+    retain: true
+
+light 1:
+  - platform: mqtt
+    name: "Bedroom Relay"
+    state_topic: "stat/sonoff/RESULT"
+    value_template: '{{ value_json["POWER1"] }}'
+    command_topic: "cmnd/sonoff/POWER1"
+    availability_topic: "tele/sonoff/LWT"
+    qos: 1
+    payload_on: "ON"
+    payload_off: "OFF"
+    payload_available: "Online"
+    payload_not_available: "Offline"
+    retain: false
+
+light 2:
+  - platform: mqtt
+    name: "Luz Suíte"
+    state_topic: "stat/sonoff/RESULT"
+    value_template: '{{ value_json["POWER2"] }}'
+    command_topic: "cmnd/sonoff/POWER2"
+    availability_topic: "tele/sonoff/LWT"
+    qos: 1
+    payload_on: "ON"
+    payload_off: "OFF"
+    payload_available: "Online"
+    payload_not_available: "Offline"
+    retain: false
+
+media_player 1:
+  - platform: webostv
+    name: webOS TV
+    host: 10.0.0.103
+    customize:
+      sources:
+        - youtube
+        - netflix
+
+group:
+  office:
+    name: Escritório
+    entities:
+      - switch.luz_1
+      - switch.luz_2
+      - media_player.webos_tv
+
+  bedroom:
+    name: Bedroom
+    entities:
+      - light.bedroom_relay
+      - light.luz_suite
+

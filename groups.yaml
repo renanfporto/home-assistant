@@ -1,0 +1,13 @@
+group:
+  office:
+    name: Escritório
+    entities:
+      - switch.luz_1
+      - switch.luz_2
+
+  bedroom:
+    name: Suíte
+    entities:
+    - light.rele_suite
+    - light.luz_suite
+
