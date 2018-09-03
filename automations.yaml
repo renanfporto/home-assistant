@@ -1,4 +1,4 @@
-- alias: "Power state on HA start-up"
+- alias: "Status Sonoff on HA start-up"
   trigger:
     platform: homeassistant
     event: start
@@ -11,3 +11,23 @@
       data:
         topic: "cmnd/sonoff/POWER2"
         payload: ""
+
+- alias: "Theme for day/night"
+  trigger:
+    - platform: homeassistant
+      event: start
+    - platform: state
+      entity_id: sun.sun
+      to: above_horizon
+    - platform: state
+      entity_id: sun.sun
+      to: below_horizon
+  action:
+    service_template: frontend.set_theme
+    data_template:
+      name: >
+        {% if states.sun.sun.state == "above_horizon" %}
+          default
+        {% else %}
+          darkcyan
+        {% endif %}
