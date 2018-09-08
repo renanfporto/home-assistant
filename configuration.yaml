@@ -93,6 +93,7 @@ cloud:
     filter:
       include_entities:
         - light.bedroom_relay
+        - light.bedroom_light
 
 #group: !include groups.yaml
 automation: !include automations.yaml
