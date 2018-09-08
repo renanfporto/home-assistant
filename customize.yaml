@@ -2,3 +2,5 @@ group.office:
   entity_id:
   - switch.luz_1
   - switch.luz_2
+group.bedroom:
+  friendly_name: Suíte
